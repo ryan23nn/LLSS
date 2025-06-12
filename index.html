@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fase 0</title>
+  <link rel="stylesheet" href="css/geral.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    #gameContainer {
+      max-width: 700px;
+      padding: 20px;
+    }
+
+    #storyText {
+      white-space: pre-wrap;
+      margin-top: 30px;
+      min-height: 200px;
+      font-size: 1.4em;
+      line-height: 1.3;
+      color: #fff;
+      text-align: left;
+    }
+
+    #startButton, .choiceButton, #restartButton {
+      background-color: transparent;
+      color: #fff;
+      border: 1.5px solid #fff;
+      padding: 10px 25px;
+      font-size: 1.2em;
+      cursor: pointer;
+      margin-top: 15px;
+      border-radius: 6px;
+      font-weight: 600;
+      text-transform: none;
+      box-shadow: none;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    #startButton:hover,
+    .choiceButton:hover,
+    #restartButton:hover {
+      background-color: #444;
+      color: #fff;
+      border-color: #fff;
+    }
+
+    #startButton:active,
+    .choiceButton:active,
+    #restartButton:active {
+      background-color: #666; 
+      color: #fff;
+      border-color: #fff;
+      transform: scale(0.98);
+    }
+
+    .choiceContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 30px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <button id="startButton">Começar Jogo</button>
+  </div>
+
+  <script>
+    const historia = `Samuel sempre foi o tipo de garoto que ninguém notava. Tímido ao extremo, afundava no silêncio da sua própria mente enquanto o mundo ao redor pulsava rápido demais. Era estudioso, sim, mas também cheio de dúvidas, medo e uma solidão que só ele parecia carregar. Na Escola Maria Santos Bairão, onde a pressão por ser alguém era quase sufocante, ele mal conseguia se encaixar. Até que, numa manhã cinzenta, cruzou o olhar com Samara.\n\nSamara não era a aluna que chamava atenção pela inteligência; longe disso. Ela tropeçava nas matérias, cometia erros bobos e parecia sempre estar um passo atrás dos colegas. Mas tinha algo que não se aprende nos livros: uma personalidade crua, áspera, quase revoltada. Uma doçura escondida em camadas de insegurança e uma vontade feroz de ser vista — mesmo que, por dentro, estivesse perdida em seus próprios medos e um passado que ninguém conhecia.\n\nEles começaram com olhares furtivos no corredor, depois sorrisos tímidos entre as tarefas. Aos poucos, algo mais complicado cresceu. Samuel, fascinado pela vulnerabilidade e força contraditória de Samara, tentava entendê-la, enquanto ela via nele um porto seguro — alguém que não julgava, que parecia se importar além do óbvio. Mas o que poderia ter sido um amor puro logo se enredou em incertezas e cobranças.\n\nAs tardes de estudos viraram encontros silenciosos, recheados de olhares pesados e conversas cheias de significados não ditos. Samara, assombrada pela sensação constante de não ser boa o suficiente, se afastava nos momentos em que mais precisava de apoio. Samuel, por sua vez, lutava contra o medo de perder aquilo que começava a sentir, e contra sua própria insegurança que o fazia questionar se merecia algo tão intenso.\n\nEntre brigas por ciúmes, lágrimas escondidas e a pressão de uma vida que insistia em não dar trégua, eles se agarravam a essa história de amor frágil, torta e cheia de reviravoltas. O amor deles não era conto de fadas, era uma batalha diária, uma mistura dolorosa de desejo, medo e esperança.\n\nE então, quando ninguém esperava, algo aconteceu...`;
+
+    const gameContainer = document.getElementById('gameContainer');
+
+    document.getElementById('startButton').onclick = () => {
+      startStory();
+    };
+
+    function startStory() {
+      gameContainer.innerHTML = `
+        <div id="storyText"></div>
+        <div class="choiceContainer"></div>
+      `;
+      const storyText = document.getElementById("storyText");
+      typeWriter(historia, storyText, 0, 30, showChoices);
+    }
+
+    function typeWriter(text, element, i, speed, callback) {
+      if (i < text.length) {
+        if (text.substring(i, i + 3) === '...') {
+          element.innerHTML += '...';
+          i += 3;
+          setTimeout(() => typeWriter(text, element, i, speed, callback), speed);
+        } else {
+          element.innerHTML += text.charAt(i);
+          const currentChar = text.charAt(i);
+          const isPauseChar = currentChar === '.' && !(text.substring(i, i + 3) === '...') && i < text.length - 3;
+          const delay = isPauseChar ? 900 : speed;
+          setTimeout(() => typeWriter(text, element, i + 1, speed, callback), delay);
+        }
+      } else {
+        if (callback) callback();
+      }
+    }
+
+    function showChoices() {
+      const choiceContainer = document.querySelector(".choiceContainer");
+      choiceContainer.innerHTML = `
+        <button class="choiceButton" onclick="casar(this)">eles decidem se casar.</button>
+        <button class="choiceButton" onclick="separar(this)">eles não aguentam e se separam.</button>
+        <button class="choiceButton" onclick="engravidar(this)">samara engravida.</button>
+      `;
+    }
+
+    function casar(button) {
+      appendToStory(`\n\n💍\nSamuel e Samara se casaram e estão a viver uma história juntos!\n\nPrepare-se para a próxima fase...`);
+      disableChoices(button);
+    }
+
+    function separar(button) {
+      appendToStory(`\n\n💔\nSamuel e Samara seguiram caminhos diferentes...\n\nGame Over.`);
+      disableChoices(button, true);
+    }
+
+    function engravidar(button) {
+      appendToStory(`\n\n🤰\nSamara descobriu que está grávida! Uma nova etapa começa para Samuel e Samara...\n\nPrepare-se para a próxima fase da história!`);
+      disableChoices(button);
+    }
+
+    function appendToStory(text) {
+      const storyText = document.getElementById("storyText");
+      // adiciona texto mantendo o existente
+      storyText.innerHTML += text.replace(/\n/g, "<br>");
+    }
+
+    // Desabilita todos os botões de escolha e, se especificado, adiciona botão de reiniciar
+    function disableChoices(clickedButton, showRestart = false) {
+      const choiceButtons = document.querySelectorAll(".choiceButton");
+      choiceButtons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'default';
+      });
+      if (showRestart) {
+        const choiceContainer = document.querySelector(".choiceContainer");
+        const restartBtn = document.createElement("button");
+        restartBtn.id = "restartButton";
+        restartBtn.textContent = "Reiniciar Jogo";
+        restartBtn.onclick = () => location.reload();
+        choiceContainer.appendChild(restartBtn);
+      }
+    }
+  </script>
+</body>
+</html>
