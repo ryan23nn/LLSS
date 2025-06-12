@@ -8,9 +8,10 @@
 body{
     background-color: black;
     color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
       height: 100vh;
       text-align: center;
       margin: 0;
