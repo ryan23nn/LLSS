@@ -1,4 +1,4 @@
-# 🐒 Life I and You: Samuel e Samara.
+# ❤️ Love, Life and Samuel and Samara
 Você vai ler uma história… e fazer escolhas. Algumas boas, outras péssimas, e outras… inexplicáveis.
 
 Não espere lógica. Não espere sentido. Só clique, escolha e veja onde isso vai dar. Talvez você vire um rei. Talvez você vire uma gelatina. Quem sabe?
