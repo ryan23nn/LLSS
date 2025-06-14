@@ -72,19 +72,21 @@
       background-color: #444;
     }
   </style>
+  <script src="../../js/contadores.js"></script>
 </head>
 <body>
   <nav>
     <p id="filhos-contador">Filhos: 0</p>
-    <p id="dinheiro-contador">Dinheiro: R$ 0</p>
+    <p id="dinheiro-contador">Dinheiro: R$ 1000</p>
+    <span id="contador-bonus"></span>
   </nav>
   <section class="jogo">
     <h1 id="tituloFase"></h1>
     <div id="gameContainer">
       <p id="resposta" class="storyText"></p>
       <div id="inputArea" class="input-section" style="display:none;">
-        <label for="nomeBebe">Escolha o nome do bebê:</label>
-        <input type="text" id="nomeBebe" placeholder="Digite o nome">
+        <label for="nomeBebe1">Escolha o nome do bebê:</label>
+        <input type="text" id="nomeBebe1" placeholder="Digite o nome">
         <div class="genero-buttons">
           <button id="btnMenino" onclick="selecionarGenero('masculino')">Menino</button>
           <button id="btnMenina" onclick="selecionarGenero('feminino')">Menina</button>
@@ -98,14 +100,31 @@
   <script>
     const escolha = localStorage.getItem('escolhaFinal');
     const escolhaFinal1 = localStorage.getItem('escolhaFinal1');
-    const nomeBebe = localStorage.getItem('nomeBebe');
-    const generoBebe = localStorage.getItem('generoBebe');
+    const nomeBebe1 = localStorage.getItem('nomeBebe1');
+    const generoBebe1 = localStorage.getItem('generoBebe1');
     const resposta = document.getElementById("resposta");
     const tituloFase = document.getElementById("tituloFase");
     const inputArea = document.getElementById("inputArea");
     const continuaTexto = document.getElementById("continuaTexto");
     const opcoesHistoria = document.getElementById("opcoesHistoria");
+    const dinheiroContador = document.getElementById("dinheiro-contador");
     let generoSelecionado = "";
+
+    // Função para pegar dinheiro do localStorage ou inicializar com 1000
+    function getDinheiro() {
+      let dinheiro = parseInt(localStorage.getItem('dinheiro'));
+      if (isNaN(dinheiro)) {
+        dinheiro = 1000;
+        localStorage.setItem('dinheiro', dinheiro);
+      }
+      return dinheiro;
+    }
+
+    // Função para atualizar o display do dinheiro e salvar no localStorage
+    function setDinheiro(valor) {
+      localStorage.setItem('dinheiro', valor);
+      dinheiroContador.textContent = `Dinheiro: R$ ${valor}`;
+    }
 
     function typeWriter(text, element, i = 0, speed = 30, callback) {
       if (i < text.length) {
@@ -118,6 +137,9 @@
     }
 
     function iniciarDigitacao() {
+      // Atualiza o dinheiro ao iniciar
+      setDinheiro(getDinheiro());
+
       if (escolhaFinal1 === "samara_emprego" || escolhaFinal1 === "samuel_emprego") {
         mostrarHistoriaCompleta(escolhaFinal1);
         return;
@@ -127,16 +149,16 @@
         tituloFase.textContent = "Eis aí o descendente 👶🏽";
         const texto = `Samara chegou com os olhos cheios d’água, segurando o pequeno teste nas mãos trêmulas.
         
-— Samuel, estou grávida.
+    — Samuel, estou grávida.
 
-Ele não respondeu de imediato. Apenas a observou por longos segundos, como se ela tivesse acabado de abrir uma janela nova no mundo. Por fim, respirou fundo e assentiu, como quem aceita o improvável com ternura.
+    Ele não respondeu de imediato. Apenas a observou por longos segundos, como se ela tivesse acabado de abrir uma janela nova no mundo. Por fim, respirou fundo e assentiu, como quem aceita o improvável com ternura.
 
-Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussurrados e receios não ditos. Quando a criança finalmente chegou, numa madrugada úmida de abril, os dois não choraram. Apenas se olharam. E riram.`;
+    Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussurrados e receios não ditos. Quando a criança finalmente chegou, numa madrugada úmida de abril, os dois não choraram. Apenas se olharam. E riram.`;
 
         typeWriter(texto, resposta, 0, 30, () => {
-          if (nomeBebe && generoBebe) {
+          if (nomeBebe1 && generoBebe1) {
             inputArea.style.display = "none";
-            mostrarContinuidadeNomeSalvo(nomeBebe, generoBebe);
+            mostrarContinuidadeNomeSalvo(nomeBebe1, generoBebe1);
           } else {
             inputArea.style.display = "flex";
           }
@@ -145,21 +167,23 @@ Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussur
         tituloFase.textContent = "A nova vida a dois";
         const texto = `— Você acha que a gente dá certo? — perguntou Samara, encarando a chuva escorrendo pela janela do cartório.
 
-— Eu acho que a gente insiste — respondeu Samuel, com o olhar perdido na aliança recém-colocada.
+    — Eu acho que a gente insiste — respondeu Samuel, com o olhar perdido na aliança recém-colocada.
 
-Não foi um casamento de filme. Mas foi deles. E naquele salão simples, entre sorrisos tortos e abraços desajeitados, firmaram um pacto mais silencioso do que o próprio “sim”.`;
-        typeWriter(texto, resposta, 0, 30);
+    Não foi um casamento de filme. Mas foi deles. E naquele salão simples, entre sorrisos tortos e abraços desajeitados, firmaram um pacto mais silencioso do que o próprio “sim”.`;
+        typeWriter(texto, resposta, 0, 30, () => {
+          mostrarOpcoesCasar();
+        });
       } else if (escolha === "separar") {
         tituloFase.textContent = "O recomeço solitário";
         const texto = `Samuel fechou a porta com cuidado, como se o silêncio pudesse apagar os ruídos que vinham de dentro.
 
-Samara, sentada no sofá, não chorava mais. Apenas mexia na aliança que agora parecia pesada demais.
+    Samara, sentada no sofá, não chorava mais. Apenas mexia na aliança que agora parecia pesada demais.
 
-— Talvez o amor não acabe — ela disse. — Talvez ele só mude de endereço.
+    — Talvez o amor não acabe — ela disse. — Talvez ele só mude de endereço.
 
-— E às vezes nem deixa bilhete — completou ele, antes de sair.
+    — E às vezes nem deixa bilhete — completou ele, antes de sair.
 
-O começo do fim é quase sempre mais calmo do que imaginamos.`;
+    O começo do fim é quase sempre mais calmo do que imaginamos.`;
 
         typeWriter(texto, resposta, 0, 30, () => {
           setTimeout(() => {
@@ -176,14 +200,14 @@ O começo do fim é quase sempre mais calmo do que imaginamos.`;
       tituloFase.textContent = "Eis aí o descendente 👶🏽";
       const textoInicial = `Samara chegou com os olhos cheios d’água, segurando o pequeno teste nas mãos trêmulas.
         
-— Samuel, estou grávida.
+    — Samuel, estou grávida.
 
-Ele não respondeu de imediato. Apenas a observou por longos segundos, como se ela tivesse acabado de abrir uma janela nova no mundo. Por fim, respirou fundo e assentiu, como quem aceita o improvável com ternura.
+    Ele não respondeu de imediato. Apenas a observou por longos segundos, como se ela tivesse acabado de abrir uma janela nova no mundo. Por fim, respirou fundo e assentiu, como quem aceita o improvável com ternura.
 
-Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussurrados e receios não ditos. Quando a criança finalmente chegou, numa madrugada úmida de abril, os dois não choraram. Apenas se olharam. E riram.`;
+    Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussurrados e receios não ditos. Quando a criança finalmente chegou, numa madrugada úmida de abril, os dois não choraram. Apenas se olharam. E riram.`;
 
-      const nome = nomeBebe || "O bebê";
-      const genero = generoBebe || "masculino";
+      const nome = nomeBebe1 || "O bebê";
+      const genero = generoBebe1 || "masculino";
       const textoNome = `\n\nO bebê recebeu o nome de ${nome}, um nome que soava novo, ainda sem história, mas já carregado de promessas. Era ${genero === "masculino" ? "um menino" : "uma menina"} com olhos de universo, e os dois sabiam: tudo o que vier depois, terá esse pequeno como sol.`;
 
       let textoEmprego = "";
@@ -212,6 +236,72 @@ Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussur
       });
     }
 
+    function mostrarOpcoesCasar() {
+      opcoesHistoria.innerHTML = "";
+      opcoesHistoria.className = "choiceContainer";
+      opcoesHistoria.style.display = "flex";
+
+      const opcoes = [
+        { texto: "Fazer uma festa simples", valor: "festa_simples" },
+        { texto: "Viajar para a lua de mel", valor: "lua_de_mel" },
+        { texto: "Casar no cartório simples", valor: "cartorio_simples" },
+        { texto: "Cancelar o casamento", valor: "cancelar_casamento" }
+      ];
+
+      let i = 0;
+
+      function digitarBotao() {
+        if (i < opcoes.length) {
+          const opcao = opcoes[i];
+          const btn = document.createElement("button");
+          btn.className = "choiceButton";
+          btn.disabled = true;
+          opcoesHistoria.appendChild(btn);
+
+          typeWriter(opcao.texto, btn, 0, 30, () => {
+            btn.disabled = false;
+            btn.onclick = () => {
+              localStorage.setItem("escolhaFinal1", opcao.valor);
+              opcoesHistoria.style.display = "none";
+
+              let textoEscolha = "";
+              if (opcao.valor === "lua_de_mel") {
+                // Debita 5000 do dinheiro
+                let dinheiroAtual = getDinheiro();
+                if (dinheiroAtual >= 5000) {
+                  dinheiroAtual -= 5000;
+                  setDinheiro(dinheiroAtual);
+                  textoEscolha = `Após o casamento, partiram para a lua de mel em uma pequena pousada à beira-mar. Entre caminhadas na praia e conversas à luz da lua, a promessa de um futuro juntos se fortaleceu. Gastaram R$ 5000 da poupança para tornar tudo especial.`;
+                } else {
+                  textoEscolha = `Queriam viajar para a lua de mel, mas não tinham dinheiro suficiente. Optaram por ficar em casa, planejando algo melhor para o futuro.`;
+                }
+              } else {
+                switch (opcao.valor) {
+                  case "festa_simples":
+                    textoEscolha = `Decidiram fazer uma festa simples, com poucos amigos e muita comida caseira. O riso e a música preencheram o salão, e a noite ficou marcada pelo calor humano mais do que pelo luxo.`;
+                    break;
+                  case "cartorio_simples":
+                    textoEscolha = `Optaram por um casamento rápido e discreto no cartório. Nada de grandes cerimônias, apenas o essencial para oficializar o compromisso.`;
+                    break;
+                  case "cancelar_casamento":
+                    textoEscolha = `No último minuto, dúvidas e medos tomaram conta. O casamento foi cancelado, e os dois seguiram caminhos diferentes, com o peso do que poderia ter sido.`;
+                    break;
+                }
+              }
+
+              continuaTexto.innerHTML = "";
+              continuaTexto.style.display = "block";
+              typeWriter(textoEscolha, continuaTexto, 0, 30);
+            };
+            i++;
+            setTimeout(digitarBotao, 300);
+          });
+        }
+      }
+
+      digitarBotao();
+    }
+
     function selecionarGenero(genero) {
       generoSelecionado = genero;
       document.getElementById('btnMenino').classList.remove('genero-selecionado');
@@ -224,18 +314,17 @@ Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussur
     }
 
     function confirmarNome() {
-      const nome = document.getElementById("nomeBebe").value.trim();
+      const nome = document.getElementById("nomeBebe1").value.trim();
       if (!nome || !generoSelecionado) {
         alert("Por favor, preencha o nome e selecione o gênero.");
         return;
       }
 
-      localStorage.setItem('nomeBebe', nome);
-      localStorage.setItem('generoBebe', generoSelecionado);
+      localStorage.setItem('nomeBebe1', nome);
+      localStorage.setItem('generoBebe1', generoSelecionado);
       inputArea.style.display = "none";
       const textoFinal = `\n\nO bebê recebeu o nome de ${nome}, um nome que soava novo, ainda sem história, mas já carregado de promessas. Era ${generoSelecionado === "masculino" ? "um menino" : "uma menina"} com olhos de universo, e os dois sabiam: tudo o que vier depois, terá esse pequeno como sol.`;
       continuaTexto.style.display = "block";
-      // Aqui mantemos o texto antigo e agregamos o novo com digitação
       typeWriter(textoFinal, continuaTexto, 0, 30, () => {
         mostrarOpcoes();
       });
@@ -274,15 +363,17 @@ Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussur
               } else {
                 localStorage.setItem("escolhaFinal1", opcao.valor);
                 opcoesHistoria.style.display = "none";
-                // Ao invés de limpar o texto, vamos agregar o texto da escolha na continuação
                 let textoEmprego = "";
                 if (opcao.valor === "samuel_emprego") {
                   textoEmprego = `Samuel saiu cedo naquela manhã. A barba mal feita, a camisa limpa — mas amarrotada — e a esperança apertada nos bolsos. Conseguiu emprego num mercado de bairro. Nada grandioso, mas quando voltou e Samara o viu chegar com o primeiro pão comprado com o próprio suor, ela não disse nada. Apenas sorriu.`;
                 } else if (opcao.valor === "samara_emprego") {
-                  textoEmprego = `Samara passou na entrevista quase sem acreditar. Quando saiu do prédio, sentiu o vento bagunçar os cabelos e a coragem soprar mais forte. Em casa, Samuel cuidava do bebê com mãos desajeitadas, mas firmes. Quando ela entrou e disse "consegui", ele respondeu com um beijo na testa e um suspiro aliviado.`;
+                    const nomeBebe = localStorage.getItem('nomeBebe1') || "o bebê";
+                    textoEmprego = `Samara passou na entrevista quase sem acreditar. Quando saiu do prédio, sentiu o vento bagunçar os cabelos e a coragem soprar mais forte. Em casa, Samuel cuidava de ${nomeBebe} com mãos desajeitadas, mas firmes. Quando ela entrou e disse "consegui", ele respondeu com um beijo na testa e um suspiro aliviado.`;
                 }
                 continuaTexto.innerHTML += "<br><br>";
-                typeWriter(textoEmprego, continuaTexto, 0, 30);
+                typeWriter(textoEmprego, continuaTexto, 0, 30, () => {
+                mostrarOpcoesMoradia();
+                });
               }
             };
             i++;
@@ -293,9 +384,94 @@ Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussur
 
       digitarBotao();
     }
+function mostrarResumoMoradia() {
+      const escolhaMoradia = localStorage.getItem('escolhaMoradia');
+      if (!escolhaMoradia) return false;
+
+      let textoMoradia = "";
+      if (escolhaMoradia === "comprar_casa") {
+        textoMoradia = `Com o dinheiro suado de anos de esforço, compraram uma casinha de dois cômodos num bairro afastado. Era simples, mas era deles. A sensação de chave na mão foi como um ponto final feliz, ainda que custoso.`;
+      } else if (escolhaMoradia === "alugar_casa") {
+        textoMoradia = `Assinaram o contrato de aluguel. Era um apertamento antigo, com vazamentos no teto e azulejos quebrados. Mas cabia no orçamento, e ver o bebê dormindo ali fez tudo valer a pena.`;
+      }
+      continuaTexto.innerHTML += "<br><br>";
+      continuaTexto.style.display = "block";
+      typeWriter(textoMoradia, continuaTexto, 0, 30);
+      return true;
+    }
+
+    function mostrarOpcoesMoradia() {
+      opcoesHistoria.innerHTML = "";
+      opcoesHistoria.className = "choiceContainer";
+      opcoesHistoria.style.display = "flex";
+
+      const opcoes = [
+        { texto: "Comprar uma casa (-R$100mil)", valor: "comprar_casa" },
+        { texto: "Alugar uma casa (-R$300 por salário)", valor: "alugar_casa" }
+      ];
+
+      let i = 0;
+
+      function digitarBotao() {
+        if (i < opcoes.length) {
+          const opcao = opcoes[i];
+          const btn = document.createElement("button");
+          btn.className = "choiceButton";
+          btn.disabled = true;
+          opcoesHistoria.appendChild(btn);
+
+          typeWriter(opcao.texto, btn, 0, 30, () => {
+            btn.disabled = false;
+            btn.onclick = () => {
+              opcoesHistoria.style.display = "none";
+              let textoMoradia = "";
+              let dinheiroAtual = getDinheiro();
+
+              if (opcao.valor === "comprar_casa") {
+                if (dinheiroAtual >= 100000) {
+                  dinheiroAtual -= 100000;
+                  setDinheiro(dinheiroAtual);
+                  textoMoradia = `Com o dinheiro suado de anos de esforço, compraram uma casinha de dois cômodos num bairro afastado. Era simples, mas era deles. A sensação de chave na mão foi como um ponto final feliz, ainda que custoso.`;
+                  localStorage.setItem('escolhaMoradia', 'comprar_casa');
+                } else {
+                  textoMoradia = `Sonharam alto, mas o dinheiro não acompanhou. Comprar uma casa agora era impossível. Teriam que repensar os planos e tentar outra saída.`;
+                }
+              } else if (opcao.valor === "alugar_casa") {
+                if (dinheiroAtual >= 350) {
+                  dinheiroAtual -= 350;
+                  setDinheiro(dinheiroAtual);
+                  textoMoradia = `Assinaram o contrato de aluguel. Era um apertamento antigo, com vazamentos no teto e azulejos quebrados. Mas cabia no orçamento, e ver o bebê dormindo ali fez tudo valer a pena.`;
+                  localStorage.setItem('escolhaMoradia', 'alugar_casa');
+                } else {
+                  textoMoradia = `Nem o aluguel conseguiram pagar. Foram acolhidos provisoriamente por um tio distante, enquanto tentavam se reerguer. A dignidade, porém, continuava firme nos olhos de ambos.`;
+                }
+              }
+
+              continuaTexto.innerHTML += "<br><br>";
+              typeWriter(textoMoradia, continuaTexto, 0, 30);
+            };
+            i++;
+            setTimeout(digitarBotao, 300);
+          });
+        }
+      }
+      atualizarVisualDinheiro();
+      digitarBotao();
+    }
+    
+    const escolhaMoradia = localStorage.getItem('escolhaMoradia');
+  if (escolhaMoradia) {
+    setTimeout(() => {
+      mostrarResumoMoradia();
+    }, 1000);
+  } else {
+    setTimeout(() => {
+      mostrarOpcoesMoradia();
+    }, 1000);
+  }
 
     window.onload = iniciarDigitacao;
+
   </script>
-  <script src="../../js/contadores.js"></script>
 </body>
 </html>

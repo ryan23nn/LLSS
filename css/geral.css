@@ -15,7 +15,7 @@ body,.jogo,html{
     align-items: center;
     text-align: center;
     margin: 3% 0;
-    padding: 0;
+    padding: 2% 0;
 }
 .jogo{
   grid-area: jogo;
@@ -25,11 +25,16 @@ body,.jogo,html{
 }
 nav {
   display: flex;
-  padding: 5%;
+  padding: 4% 5% 2% 5%;
   gap: 3%;
   justify-content: start;
   align-items: center;
   width: 100%;
+  position: fixed;
+  top: 0;
+  background-color: #000000;
+  left: 0;
+  z-index: 1000;
 }
 nav a {
   color: #fff;
