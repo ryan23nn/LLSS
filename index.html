@@ -6,31 +6,45 @@
   <title>Fase Início</title>
   <link rel="stylesheet" href="css/geral.css">
   <link rel="icon" href="img/icon.png" type="image/x-icon">
-  <style>
-
-  </style>
 </head>
 <body>
-  <h1>Love, Life and Samuel and Samara</h1>
-  <div id="gameContainer">
-    <button id="startButton">Começar Jogo</button>
-  </div>
+  <nav>
+    <p id="filhos-contador">Filhos: 0</p>
+    <p id="dinheiro-contador">Dinheiro: R$ 0</p>
+  </nav>
+  <section class="jogo">
+    <img src="img/icon.png" style="width: 9vw;margin: 2%">
+    <h1>Love, Life and Samuel and Samara</h1>
+    <div id="gameContainer">
+      <button id="startButton">Começar Jogo</button>
+    </div>
+  </section>
+
   <script>
     const historia = `Samuel sempre foi reservado, perdido em seus próprios pensamentos enquanto a escola exigia que ele se encaixasse. Ele era estudioso, mas carregava dúvidas e uma solidão discreta. Até que, numa manhã qualquer, cruzou o olhar com Samara.\n\nEla era burra, mas sua personalidade intensa e cheia de contradições chamava atenção. Por trás da postura desafiadora, escondia inseguranças e um desejo de ser vista. Começaram com olhares furtivos, depois vieram os sorrisos tímidos. Com o tempo, criaram um vínculo delicado e cheio de significados. Samuel se fascinava pela força e fragilidade de Samara, enquanto ela via nele um refúgio—alguém que não julgava, apenas compreendia.\n\nMas os sentimentos trouxeram desafios. Samara, atormentada por sua própria insegurança, afastava-se nos momentos em que mais precisava de apoio. Samuel, por sua vez, tentava se agarrar ao que estavam construindo, lutando contra suas próprias dúvidas.\n\nEntre desencontros e expectativas frustradas, o amor deles era um misto de medo e esperança. E então, quando ninguém esperava, algo aconteceu...`;
 
     const gameContainer = document.getElementById('gameContainer');
 
-    document.getElementById('startButton').onclick = () => {
-      startStory();
+    window.onload = () => {
+      const escolhaFeita = localStorage.getItem('escolhaFinal');
+      const textoFinal = localStorage.getItem('textoFinal');
+
+      if (escolhaFeita && textoFinal) {
+        exibirHistoriaCompleta(textoFinal);
+      } else {
+        document.getElementById('startButton').onclick = () => {
+          startStory();
+        };
+      }
     };
 
     function startStory() {
       gameContainer.innerHTML = `
-        <div id="storyText"></div>
+        <div class="storyText"></div>
         <div class="choiceContainer"></div>
         <div id="extraText"></div>
       `;
-      const storyText = document.getElementById("storyText");
+      const storyText = document.querySelector(".storyText");
       typeWriter(historia, storyText, 0, 30, showChoices);
     }
 
@@ -62,37 +76,66 @@
     }
 
     function casar(button) {
-      appendToStory(`\n\n💍\nSamuel e Samara se casaram e estão a viver uma história juntos!\n\nPrepare-se para a próxima fase...`);
-      disableChoices(button);
+      const texto = `\n\n💍\nSamuel e Samara se casaram e estão a viver uma história juntos!\n\nPrepare-se para a próxima fase...`;
+      salvarEscolha('casar', texto);
+      appendToStory(texto);
+      disableChoices();
     }
 
     function separar(button) {
-      appendToStory(`\n\n💔\nSamuel e Samara seguiram caminhos diferentes...\n\nGame Over.`, true);
-      disableChoices(button, true);
+      const texto = `\n\n💔\nSamuel e Samara seguiram caminhos diferentes...\n\nGame Over.`;
+      salvarEscolha('separar', texto);
+      appendToStory(texto, true);
+      disableChoices();
     }
 
     function engravidar(button) {
-      appendToStory(`\n\n🤰\nSamara descobriu que está grávida! Uma nova etapa começa para Samuel e Samara...\n\nPrepare-se para a próxima fase da história!`);
-      disableChoices(button);
+      const texto = `\n\n🤰\nSamara descobriu que está grávida! Uma nova etapa começa para Samuel e Samara...\n\nPrepare-se para a próxima fase da história!`;
+      salvarEscolha('engravidar', texto);
+      appendToStory(texto);
+      disableChoices();
+      adicionarFilho();
+    }
+
+    function salvarEscolha(escolha, texto) {
+      localStorage.setItem('escolhaFinal', escolha);
+      localStorage.setItem('textoFinal', texto);
     }
 
     function appendToStory(text, showRestart = false) {
       const extraText = document.getElementById("extraText");
       const newParagraph = document.createElement("div");
       extraText.appendChild(newParagraph);
+
       typeWriter(text, newParagraph, 0, 30, () => {
         if (showRestart) {
           const choiceContainer = document.querySelector(".choiceContainer");
           const restartBtn = document.createElement("button");
           restartBtn.id = "restartButton";
           restartBtn.textContent = "Reiniciar Jogo";
-          restartBtn.onclick = () => location.reload();
+          restartBtn.onclick = () => {
+            localStorage.removeItem('escolhaFinal');
+            localStorage.removeItem('textoFinal');
+            location.reload();
+          };
+          restartBtn.style.opacity = "1";
+          restartBtn.style.cursor = "pointer";
           choiceContainer.appendChild(restartBtn);
+        } else {
+          setTimeout(() => {
+            const nextBtn = document.createElement("button");
+            nextBtn.id = "nextPhaseButton";
+            nextBtn.textContent = "➡ Próxima Fase";
+            nextBtn.onclick = () => window.location.href = "paginas/fases/fase1.html";
+            nextBtn.style.opacity = "1";
+            nextBtn.style.cursor = "pointer";
+            extraText.appendChild(nextBtn);
+          }, 3000);
         }
       });
     }
 
-    function disableChoices(clickedButton, showRestart = false) {
+    function disableChoices() {
       const choiceButtons = document.querySelectorAll(".choiceButton");
       choiceButtons.forEach(btn => {
         btn.disabled = true;
@@ -100,6 +143,46 @@
         btn.style.cursor = 'default';
       });
     }
+
+    function exibirHistoriaCompleta(textoFinal) {
+      gameContainer.innerHTML = `
+        <div class="storyText">${historia.replace(/\n/g, '<br>')}</div>
+        <div class="choiceContainer">Você já fez sua escolha.</div>
+        <div id="extraText"><div>${textoFinal.replace(/\n/g, '<br>')}</div></div>
+      `;
+
+      const escolha = localStorage.getItem('escolhaFinal');
+      const choiceContainer = document.querySelector(".choiceContainer");
+
+      if (escolha !== 'separar') {
+        const nextBtn = document.createElement("button");
+        nextBtn.id = "nextPhaseButton";
+        nextBtn.textContent = "➡ Próxima Fase";
+        nextBtn.onclick = () => window.location.href = "paginas/fases/fase1.html";
+        nextBtn.style.opacity = "1";
+        nextBtn.style.cursor = "pointer";
+        choiceContainer.appendChild(nextBtn);
+      } else {
+        const restartBtn = document.createElement("button");
+        restartBtn.id = "restartButton";
+        restartBtn.textContent = "Reiniciar Jogo";
+        restartBtn.onclick = () => {
+          localStorage.removeItem('escolhaFinal');
+          localStorage.removeItem('textoFinal');
+          location.reload();
+        };
+        restartBtn.style.opacity = "1";
+        restartBtn.style.cursor = "pointer";
+        choiceContainer.appendChild(restartBtn);
+      }
+    }
+
+    // Função placeholder para não quebrar código
+    function adicionarFilho() {
+      console.log('Função adicionarFilho chamada');
+    }
   </script>
+
+  <script src="js/contadores.js"></script>
 </body>
 </html>

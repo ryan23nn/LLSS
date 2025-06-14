@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Capítulo 1</title>
+  <link rel="stylesheet" href="../../css/geral.css">
+  <link rel="icon" href="img/icon.png" type="image/x-icon">
+  <style>
+    /* Seus estilos aqui... (mantidos igual) */
+    .input-section {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      border: 2px solid #fff;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: transparent;
+      color: #fff;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .input-section label {
+      font-size: 1.1em;
+    }
+    .input-section input {
+      padding: 10px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1.5px solid #fff;
+      background-color: transparent;
+      color: #fff;
+      text-align: center;
+    }
+    .input-section input::placeholder {
+      color: #aaa;
+      text-align: center;
+    }
+    .input-section button {
+      background-color: transparent;
+      color: #fff;
+      border: 1.5px solid #fff;
+      padding: 10px 25px;
+      font-size: 1.1em;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .input-section button:hover {
+      background-color: #444;
+    }
+    .genero-buttons button {
+      margin: 0 5px;
+    }
+    .genero-selecionado {
+      border: 3px solid #fff !important;
+      background-color: #333 !important;
+    }
+    #opcoesHistoria button {
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: transparent;
+      border: 1.5px solid #fff;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #opcoesHistoria button:hover {
+      background-color: #444;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <p id="filhos-contador">Filhos: 0</p>
+    <p id="dinheiro-contador">Dinheiro: R$ 0</p>
+  </nav>
+  <section class="jogo">
+    <h1 id="tituloFase"></h1>
+    <div id="gameContainer">
+      <p id="resposta" class="storyText"></p>
+
+      <div id="inputArea" class="input-section" style="display:none;">
+        <label for="nomeBebe">Escolha o nome do bebê:</label>
+        <input type="text" id="nomeBebe" placeholder="Digite o nome">
+        <div class="genero-buttons">
+          <button id="btnMenino" onclick="selecionarGenero('masculino')">Menino</button>
+          <button id="btnMenina" onclick="selecionarGenero('feminino')">Menina</button>
+        </div>
+        <button onclick="confirmarNome()">Confirmar</button>
+      </div>
+
+      <div id="continuaTexto" class="storyText" style="display:none;"></div>
+
+      <div id="opcoesHistoria" style="display:none;"></div>
+    </div>
+  </section>
+
+  <script>
+    const escolha = localStorage.getItem('escolhaFinal');
+    const escolhaFinal1 = localStorage.getItem('escolhaFinal1');
+    const nomeBebe = localStorage.getItem('nomeBebe');
+    const generoBebe = localStorage.getItem('generoBebe');
+
+    const resposta = document.getElementById("resposta");
+    const tituloFase = document.getElementById("tituloFase");
+    const inputArea = document.getElementById("inputArea");
+    const continuaTexto = document.getElementById("continuaTexto");
+    const opcoesHistoria = document.getElementById("opcoesHistoria");
+
+    let generoSelecionado = "";
+
+    function typeWriter(text, element, i = 0, speed = 30, callback) {
+      if (i < text.length) {
+        element.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+        const delay = (text.charAt(i) === '.' && i < text.length - 1) ? 600 : speed;
+        setTimeout(() => typeWriter(text, element, i + 1, speed, callback), delay);
+      } else {
+        if (callback) callback();
+      }
+    }
+
+    function iniciarDigitacao() {
+      // Se escolhaFinal1 já foi feita e é um emprego, mostrar toda a história travada
+      if (escolhaFinal1 === "samara_emprego" || escolhaFinal1 === "samuel_emprego") {
+        mostrarHistoriaCompleta(escolhaFinal1);
+        return;
+      }
+
+      // Caso contrário, seguir o fluxo normal
+      if (escolha === "engravidar") {
+        tituloFase.textContent = "Eis aí o descendente 👶🏽";
+        const texto = `Samara chegou com os olhos cheios d’água, segurando o pequeno teste nas mãos trêmulas.
+        
+— Samuel, estou grávida.
+
+Ele não respondeu de imediato. Apenas a observou por longos segundos, como se ela tivesse acabado de abrir uma janela nova no mundo. Por fim, respirou fundo e assentiu, como quem aceita o improvável com ternura.
+
+Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussurrados e receios não ditos. Quando a criança finalmente chegou, numa madrugada úmida de abril, os dois não choraram. Apenas se olharam. E riram.`;
+
+        typeWriter(texto, resposta, 0, 30, () => {
+          // Se já tem nome e gênero do bebê, pular input e mostrar opções, senão mostrar input
+          if (nomeBebe && generoBebe) {
+            inputArea.style.display = "none";
+            mostrarContinuidadeNomeSalvo(nomeBebe, generoBebe);
+          } else {
+            inputArea.style.display = "flex";
+          }
+        });
+      } else if (escolha === "casar") {
+        tituloFase.textContent = "A nova vida a dois";
+        const texto = `— Você acha que a gente dá certo? — perguntou Samara, encarando a chuva escorrendo pela janela do cartório.
+
+— Eu acho que a gente insiste — respondeu Samuel, com o olhar perdido na aliança recém-colocada.
+
+Não foi um casamento de filme. Mas foi deles. E naquele salão simples, entre sorrisos tortos e abraços desajeitados, firmaram um pacto mais silencioso do que o próprio “sim”.`;
+        typeWriter(texto, resposta, 0, 30);
+      } else if (escolha === "separar") {
+        tituloFase.textContent = "O recomeço solitário";
+        const texto = `Samuel fechou a porta com cuidado, como se o silêncio pudesse apagar os ruídos que vinham de dentro.
+
+Samara, sentada no sofá, não chorava mais. Apenas mexia na aliança que agora parecia pesada demais.
+
+— Talvez o amor não acabe — ela disse. — Talvez ele só mude de endereço.
+
+— E às vezes nem deixa bilhete — completou ele, antes de sair.
+
+O começo do fim é quase sempre mais calmo do que imaginamos.`;
+
+        typeWriter(texto, resposta, 0, 30, () => {
+          setTimeout(() => {
+            window.location.href = "../../index.html";
+          }, 5000);
+        });
+      } else {
+        tituloFase.textContent = "Erro";
+        typeWriter("Você ainda não jogou a primeira fase.", resposta, 0, 30);
+      }
+    }
+
+    function mostrarHistoriaCompleta(escolhaEmprego) {
+      tituloFase.textContent = "Eis aí o descendente 👶🏽";
+      // Texto inicial
+      const textoInicial = `Samara chegou com os olhos cheios d’água, segurando o pequeno teste nas mãos trêmulas.
+        
+— Samuel, estou grávida.
+
+Ele não respondeu de imediato. Apenas a observou por longos segundos, como se ela tivesse acabado de abrir uma janela nova no mundo. Por fim, respirou fundo e assentiu, como quem aceita o improvável com ternura.
+
+Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussurrados e receios não ditos. Quando a criança finalmente chegou, numa madrugada úmida de abril, os dois não choraram. Apenas se olharam. E riram.`;
+
+      // Texto nome do bebê (se disponível)
+      const nome = nomeBebe || "O bebê";
+      const genero = generoBebe || "masculino";
+      const textoNome = `\n\nO bebê recebeu o nome de ${nome}, um nome que soava novo, ainda sem história, mas já carregado de promessas. Era ${genero === "masculino" ? "um menino" : "uma menina"} com olhos de universo, e os dois sabiam: tudo o que vier depois, terá esse pequeno como sol.`;
+
+      // Texto da escolha de emprego
+      let textoEmprego = "";
+      if (escolhaEmprego === "samuel_emprego") {
+        textoEmprego = `Samuel saiu cedo naquela manhã. A barba mal feita, a camisa limpa — mas amarrotada — e a esperança apertada nos bolsos. Conseguiu emprego num mercado de bairro. Nada grandioso, mas quando voltou e Samara o viu chegar com o primeiro pão comprado com o próprio suor, ela não disse nada. Apenas sorriu.`;
+      } else if (escolhaEmprego === "samara_emprego") {
+        textoEmprego = `Samara passou na entrevista quase sem acreditar. Quando saiu do prédio, sentiu o vento bagunçar os cabelos e a coragem soprar mais forte. Em casa, Samuel cuidava do bebê com mãos desajeitadas, mas firmes. Quando ela entrou e disse "consegui", ele respondeu com um beijo na testa e um suspiro aliviado.`;
+      }
+
+      resposta.innerHTML = "";
+      continuaTexto.innerHTML = "";
+
+      // Exibe todo texto concatenado sem animação, para que o usuário veja tudo de uma vez
+      resposta.innerHTML = textoInicial.replace(/\n/g, "<br>");
+      continuaTexto.style.display = "block";
+      continuaTexto.innerHTML = textoNome.replace(/\n/g, "<br>") + "<br><br>" + textoEmprego.replace(/\n/g, "<br>");
+
+      // Esconder input e opções (não pode mudar a história)
+      inputArea.style.display = "none";
+      opcoesHistoria.style.display = "none";
+    }
+
+    function mostrarContinuidadeNomeSalvo(nome, genero) {
+      inputArea.style.display = "none";
+      continuaTexto.innerHTML = "";
+      continuaTexto.style.display = "block";
+      const textoFinal = `\n\nO bebê recebeu o nome de ${nome}, um nome que soava novo, ainda sem história, mas já carregado de promessas. Era ${genero === "masculino" ? "um menino" : "uma menina"} com olhos de universo, e os dois sabiam: tudo o que vier depois, terá esse pequeno como sol.`;
+      typeWriter(textoFinal, continuaTexto, 0, 30, () => {
+        mostrarOpcoes();
+      });
+    }
+
+    function selecionarGenero(genero) {
+      generoSelecionado = genero;
+      document.getElementById('btnMenino').classList.remove('genero-selecionado');
+      document.getElementById('btnMenina').classList.remove('genero-selecionado');
+      if (genero === 'masculino') {
+        document.getElementById('btnMenino').classList.add('genero-selecionado');
+      } else {
+        document.getElementById('btnMenina').classList.add('genero-selecionado');
+      }
+    }
+
+    function confirmarNome() {
+      const nome = document.getElementById("nomeBebe").value.trim();
+      if (!nome || !generoSelecionado) {
+        alert("Por favor, preencha o nome e selecione o gênero.");
+        return;
+      }
+
+      localStorage.setItem('nomeBebe', nome);
+      localStorage.setItem('generoBebe', generoSelecionado);
+
+      inputArea.style.display = "none";
+      continuaTexto.innerHTML = "";
+      const textoFinal = `\n\nO bebê recebeu o nome de ${nome}, um nome que soava novo, ainda sem história, mas já carregado de promessas. Era ${generoSelecionado === "masculino" ? "um menino" : "uma menina"} com olhos de universo, e os dois sabiam: tudo o que vier depois, terá esse pequeno como sol.`;
+      continuaTexto.style.display = "block";
+      typeWriter(textoFinal, continuaTexto, 0, 30, () => {
+        mostrarOpcoes();
+      });
+    }
+
+    function mostrarOpcoes() {
+      // Se já tiver escolhaFinal1 como emprego, bloquear opções para não permitir voltar atrás
+      if (escolhaFinal1 === "samara_emprego" || escolhaFinal1 === "samuel_emprego") {
+        opcoesHistoria.style.display = "none";
+        return;
+      }
+
+      opcoesHistoria.innerHTML = "";
+      opcoesHistoria.className = "choiceContainer";
+      opcoesHistoria.style.display = "flex";
+
+      const opcoes = [
+        { texto: "Samuel arranja emprego", valor: "samuel_emprego" },
+        { texto: "Samara arranja emprego", valor: "samara_emprego" },
+        { texto: "Samuel decide vagabundear", valor: "reprovar" }
+      ];
+
+      opcoes.forEach(opcao => {
+        const btn = document.createElement("button");
+        btn.textContent = opcao.texto;
+        btn.className = "choiceButton";
+        btn.onclick = () => {
+          localStorage.setItem("escolhaFinal1", opcao.valor);
+          if (opcao.valor === "reprovar") {
+            alert("Sua escolha foi considerada irresponsável. Voltando ao início...");
+            setTimeout(() => {
+              localStorage.clear();
+              window.location.href = "../../index.html";
+            }, 2000);
+          } else {
+            opcoesHistoria.style.display = "none";
+            mostrarContinuidade(opcao.valor);
+          }
+        };
+        opcoesHistoria.appendChild(btn);
+      });
+    }
+
+    function mostrarContinuidade(escolhaFinal1) {
+      continuaTexto.innerHTML = "";
+      continuaTexto.style.display = "block";
+      let texto = "";
+
+      if (escolhaFinal1 === "samuel_emprego") {
+        texto = `Samuel saiu cedo naquela manhã. A barba mal feita, a camisa limpa — mas amarrotada — e a esperança apertada nos bolsos. Conseguiu emprego num mercado de bairro. Nada grandioso, mas quando voltou e Samara o viu chegar com o primeiro pão comprado com o próprio suor, ela não disse nada. Apenas sorriu.`;
+      } else if (escolhaFinal1 === "samara_emprego") {
+        texto = `Samara passou na entrevista quase sem acreditar. Quando saiu do prédio, sentiu o vento bagunçar os cabelos e a coragem soprar mais forte. Em casa, Samuel cuidava do bebê com mãos desajeitadas, mas firmes. Quando ela entrou e disse "consegui", ele respondeu com um beijo na testa e um suspiro aliviado.`;
+      }
+
+      typeWriter(texto, continuaTexto, 0, 30);
+    }
+
+    window.onload = iniciarDigitacao;
+  </script>
+  <script src="../../js/contadores.js"></script>
+</body>
+</html>

@@ -5,25 +5,60 @@
     box-sizing: border-box;
     font-family: "Antic Didone", serif;
 }
-body{
+
+h1{
+  font-size: 3em;
+}
+body,.jogo{
     background-color: black;
     color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    height: 100vh;
     text-align: center;
-    margin: 0;
+    margin: 2% 0;
     padding: 0;
 }
+.jogo{
+  grid-area: jogo;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+nav {
+  display: flex;
+  padding: 5%;
+  gap: 3%;
+  justify-content: start;
+  align-items: center;
+  width: 100%;
+}
+nav a {
+  color: #fff;
+  text-decoration: none;
+}
 
-    #gameContainer {
-      max-width: 700px;
-      padding: 20px;
+#gameContainer {
+  max-width: 700px;
+  padding: 20px;
+}
+
+    #nextPhaseButton {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 18px;
+      background-color: #00000000;
+      color: #fff;
+      border: 2px solid #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      display: inline-block;
+    }
+    #nextPhaseButton:hover {
+      opacity: 0.8;
+      background-color: #242424;
     }
 
-    #storyText, #extraText {
+    .storyText, #extraText {
       white-space: pre-wrap;
       margin-top: 30px;
       min-height: 200px;
