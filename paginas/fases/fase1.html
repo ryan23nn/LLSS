@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="../../css/geral.css">
   <link rel="icon" href="img/icon.png" type="image/x-icon">
   <style>
-    /* Seus estilos aqui... (mantidos igual) */
     .input-section {
       margin-top: 40px;
       display: flex;
@@ -83,7 +82,6 @@
     <h1 id="tituloFase"></h1>
     <div id="gameContainer">
       <p id="resposta" class="storyText"></p>
-
       <div id="inputArea" class="input-section" style="display:none;">
         <label for="nomeBebe">Escolha o nome do bebê:</label>
         <input type="text" id="nomeBebe" placeholder="Digite o nome">
@@ -93,25 +91,20 @@
         </div>
         <button onclick="confirmarNome()">Confirmar</button>
       </div>
-
       <div id="continuaTexto" class="storyText" style="display:none;"></div>
-
       <div id="opcoesHistoria" style="display:none;"></div>
     </div>
   </section>
-
   <script>
     const escolha = localStorage.getItem('escolhaFinal');
     const escolhaFinal1 = localStorage.getItem('escolhaFinal1');
     const nomeBebe = localStorage.getItem('nomeBebe');
     const generoBebe = localStorage.getItem('generoBebe');
-
     const resposta = document.getElementById("resposta");
     const tituloFase = document.getElementById("tituloFase");
     const inputArea = document.getElementById("inputArea");
     const continuaTexto = document.getElementById("continuaTexto");
     const opcoesHistoria = document.getElementById("opcoesHistoria");
-
     let generoSelecionado = "";
 
     function typeWriter(text, element, i = 0, speed = 30, callback) {
@@ -125,13 +118,11 @@
     }
 
     function iniciarDigitacao() {
-      // Se escolhaFinal1 já foi feita e é um emprego, mostrar toda a história travada
       if (escolhaFinal1 === "samara_emprego" || escolhaFinal1 === "samuel_emprego") {
         mostrarHistoriaCompleta(escolhaFinal1);
         return;
       }
 
-      // Caso contrário, seguir o fluxo normal
       if (escolha === "engravidar") {
         tituloFase.textContent = "Eis aí o descendente 👶🏽";
         const texto = `Samara chegou com os olhos cheios d’água, segurando o pequeno teste nas mãos trêmulas.
@@ -143,7 +134,6 @@ Ele não respondeu de imediato. Apenas a observou por longos segundos, como se e
 Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussurrados e receios não ditos. Quando a criança finalmente chegou, numa madrugada úmida de abril, os dois não choraram. Apenas se olharam. E riram.`;
 
         typeWriter(texto, resposta, 0, 30, () => {
-          // Se já tem nome e gênero do bebê, pular input e mostrar opções, senão mostrar input
           if (nomeBebe && generoBebe) {
             inputArea.style.display = "none";
             mostrarContinuidadeNomeSalvo(nomeBebe, generoBebe);
@@ -184,7 +174,6 @@ O começo do fim é quase sempre mais calmo do que imaginamos.`;
 
     function mostrarHistoriaCompleta(escolhaEmprego) {
       tituloFase.textContent = "Eis aí o descendente 👶🏽";
-      // Texto inicial
       const textoInicial = `Samara chegou com os olhos cheios d’água, segurando o pequeno teste nas mãos trêmulas.
         
 — Samuel, estou grávida.
@@ -193,12 +182,10 @@ Ele não respondeu de imediato. Apenas a observou por longos segundos, como se e
 
 Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussurrados e receios não ditos. Quando a criança finalmente chegou, numa madrugada úmida de abril, os dois não choraram. Apenas se olharam. E riram.`;
 
-      // Texto nome do bebê (se disponível)
       const nome = nomeBebe || "O bebê";
       const genero = generoBebe || "masculino";
       const textoNome = `\n\nO bebê recebeu o nome de ${nome}, um nome que soava novo, ainda sem história, mas já carregado de promessas. Era ${genero === "masculino" ? "um menino" : "uma menina"} com olhos de universo, e os dois sabiam: tudo o que vier depois, terá esse pequeno como sol.`;
 
-      // Texto da escolha de emprego
       let textoEmprego = "";
       if (escolhaEmprego === "samuel_emprego") {
         textoEmprego = `Samuel saiu cedo naquela manhã. A barba mal feita, a camisa limpa — mas amarrotada — e a esperança apertada nos bolsos. Conseguiu emprego num mercado de bairro. Nada grandioso, mas quando voltou e Samara o viu chegar com o primeiro pão comprado com o próprio suor, ela não disse nada. Apenas sorriu.`;
@@ -208,13 +195,9 @@ Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussur
 
       resposta.innerHTML = "";
       continuaTexto.innerHTML = "";
-
-      // Exibe todo texto concatenado sem animação, para que o usuário veja tudo de uma vez
       resposta.innerHTML = textoInicial.replace(/\n/g, "<br>");
       continuaTexto.style.display = "block";
       continuaTexto.innerHTML = textoNome.replace(/\n/g, "<br>") + "<br><br>" + textoEmprego.replace(/\n/g, "<br>");
-
-      // Esconder input e opções (não pode mudar a história)
       inputArea.style.display = "none";
       opcoesHistoria.style.display = "none";
     }
@@ -249,23 +232,16 @@ Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussur
 
       localStorage.setItem('nomeBebe', nome);
       localStorage.setItem('generoBebe', generoSelecionado);
-
       inputArea.style.display = "none";
-      continuaTexto.innerHTML = "";
       const textoFinal = `\n\nO bebê recebeu o nome de ${nome}, um nome que soava novo, ainda sem história, mas já carregado de promessas. Era ${generoSelecionado === "masculino" ? "um menino" : "uma menina"} com olhos de universo, e os dois sabiam: tudo o que vier depois, terá esse pequeno como sol.`;
       continuaTexto.style.display = "block";
+      // Aqui mantemos o texto antigo e agregamos o novo com digitação
       typeWriter(textoFinal, continuaTexto, 0, 30, () => {
         mostrarOpcoes();
       });
     }
 
     function mostrarOpcoes() {
-      // Se já tiver escolhaFinal1 como emprego, bloquear opções para não permitir voltar atrás
-      if (escolhaFinal1 === "samara_emprego" || escolhaFinal1 === "samuel_emprego") {
-        opcoesHistoria.style.display = "none";
-        return;
-      }
-
       opcoesHistoria.innerHTML = "";
       opcoesHistoria.className = "choiceContainer";
       opcoesHistoria.style.display = "flex";
@@ -276,39 +252,47 @@ Os meses seguintes foram um turbilhão calado — entre consultas, sonhos sussur
         { texto: "Samuel decide vagabundear", valor: "reprovar" }
       ];
 
-      opcoes.forEach(opcao => {
-        const btn = document.createElement("button");
-        btn.textContent = opcao.texto;
-        btn.className = "choiceButton";
-        btn.onclick = () => {
-          localStorage.setItem("escolhaFinal1", opcao.valor);
-          if (opcao.valor === "reprovar") {
-            alert("Sua escolha foi considerada irresponsável. Voltando ao início...");
-            setTimeout(() => {
-              localStorage.clear();
-              window.location.href = "../../index.html";
-            }, 2000);
-          } else {
-            opcoesHistoria.style.display = "none";
-            mostrarContinuidade(opcao.valor);
-          }
-        };
-        opcoesHistoria.appendChild(btn);
-      });
-    }
+      let i = 0;
 
-    function mostrarContinuidade(escolhaFinal1) {
-      continuaTexto.innerHTML = "";
-      continuaTexto.style.display = "block";
-      let texto = "";
+      function digitarBotao() {
+        if (i < opcoes.length) {
+          const opcao = opcoes[i];
+          const btn = document.createElement("button");
+          btn.className = "choiceButton";
+          btn.disabled = true;
+          opcoesHistoria.appendChild(btn);
 
-      if (escolhaFinal1 === "samuel_emprego") {
-        texto = `Samuel saiu cedo naquela manhã. A barba mal feita, a camisa limpa — mas amarrotada — e a esperança apertada nos bolsos. Conseguiu emprego num mercado de bairro. Nada grandioso, mas quando voltou e Samara o viu chegar com o primeiro pão comprado com o próprio suor, ela não disse nada. Apenas sorriu.`;
-      } else if (escolhaFinal1 === "samara_emprego") {
-        texto = `Samara passou na entrevista quase sem acreditar. Quando saiu do prédio, sentiu o vento bagunçar os cabelos e a coragem soprar mais forte. Em casa, Samuel cuidava do bebê com mãos desajeitadas, mas firmes. Quando ela entrou e disse "consegui", ele respondeu com um beijo na testa e um suspiro aliviado.`;
+          typeWriter(opcao.texto, btn, 0, 30, () => {
+            btn.disabled = false;
+            btn.onclick = () => {
+              if (opcao.valor === "reprovar") {
+                alert("Sua escolha foi considerada irresponsável. Voltando ao início...");
+                setTimeout(() => {
+                  localStorage.removeItem('escolhaFinal1');
+                  window.location.href = "#";
+                }, 2000);
+              } else {
+                localStorage.setItem("escolhaFinal1", opcao.valor);
+                opcoesHistoria.style.display = "none";
+                // Ao invés de limpar o texto, vamos agregar o texto da escolha na continuação
+                let textoEmprego = "";
+                if (opcao.valor === "samuel_emprego") {
+                  textoEmprego = `Samuel saiu cedo naquela manhã. A barba mal feita, a camisa limpa — mas amarrotada — e a esperança apertada nos bolsos. Conseguiu emprego num mercado de bairro. Nada grandioso, mas quando voltou e Samara o viu chegar com o primeiro pão comprado com o próprio suor, ela não disse nada. Apenas sorriu.`;
+                } else if (opcao.valor === "samara_emprego") {
+                  textoEmprego = `Samara passou na entrevista quase sem acreditar. Quando saiu do prédio, sentiu o vento bagunçar os cabelos e a coragem soprar mais forte. Em casa, Samuel cuidava do bebê com mãos desajeitadas, mas firmes. Quando ela entrou e disse "consegui", ele respondeu com um beijo na testa e um suspiro aliviado.`;
+                }
+                // Append com quebra de linha e texto da escolha
+                continuaTexto.innerHTML += "<br><br>";
+                typeWriter(textoEmprego, continuaTexto, 0, 30);
+              }
+            };
+            i++;
+            setTimeout(digitarBotao, 300);
+          });
+        }
       }
 
-      typeWriter(texto, continuaTexto, 0, 30);
+      digitarBotao();
     }
 
     window.onload = iniciarDigitacao;

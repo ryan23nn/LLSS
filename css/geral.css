@@ -9,12 +9,12 @@
 h1{
   font-size: 3em;
 }
-body,.jogo{
+body,.jogo,html{
     background-color: black;
     color: white;
     align-items: center;
     text-align: center;
-    margin: 2% 0;
+    margin: 3% 0;
     padding: 0;
 }
 .jogo{
